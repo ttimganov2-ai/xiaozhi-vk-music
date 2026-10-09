@@ -1,6 +1,7 @@
 import os
 import httpx
 from fastapi import FastAPI, HTTPException, Query
+from importlib.metadata import version
 
 app = FastAPI(title="XiaoZhi VK Music")
 
@@ -75,3 +76,16 @@ async def search(q: str = Query(..., min_length=1, max_length=200)):
             for track in tracks
         ]
     }
+@app.get("/vk-status")
+async def vk_status():
+    try:
+        return {
+            "vk_api_installed": True,
+            "vk_api_version": version("vk_api"),
+            "message": "Library is ready"
+        }
+    except Exception:
+        return {
+            "vk_api_installed": False,
+            "message": "Library is not installed"
+        }
