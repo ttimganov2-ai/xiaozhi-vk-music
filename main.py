@@ -39,40 +39,39 @@ async def search(q: str = Query(..., min_length=1, max_length=200)):
         "count": 10
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=20) as client:
+    async with httpx.AsyncClient(timeout=20) as client:
+        try:
             response = await client.get(
                 "https://api.vk.com/method/audio.search",
                 params=params
             )
             response.raise_for_status()
             data = response.json()
-
-        if "error" in data:
+        except httpx.HTTPError:
             raise HTTPException(
                 status_code=502,
-                detail=data["error"].get("error_msg", "VK API error")
+                detail="Could not connect to VK API"
             )
 
-        result = data.get("response", {})
-        tracks = result.get("items", []) if isinstance(result, dict) else []
-
-        return {
-            "query": q,
-            "tracks": [
-                {
-                    "id": t.get("id"),
-                    "owner_id": t.get("owner_id"),
-                    "artist": t.get("artist"),
-                    "title": t.get("title"),
-                    "duration": t.get("duration")
-                }
-                for t in tracks
-            ]
-        }
-
-    except httpx.HTTPError:
+    if "error" in data:
         raise HTTPException(
             status_code=502,
-            detail="Could not connect to VK API"
+            detail=data["error"].get("error_msg", "VK API error")
         )
+
+    result = data.get("response", {})
+    tracks = result.get("items", []) if isinstance(result, dict) else []
+
+    return {
+        "query": q,
+        "tracks": [
+            {
+                "id": track.get("id"),
+                "owner_id": track.get("owner_id"),
+                "artist": track.get("artist"),
+                "title": track.get("title"),
+                "duration": track.get("duration")
+            }
+            for track in tracks
+        ]
+    }
