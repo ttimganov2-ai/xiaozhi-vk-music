@@ -151,10 +151,15 @@ async def login():
 
             await VKID.Auth.login();
         } catch (error) {
-            document.getElementById("message").textContent =
-              "Не удалось начать вход. Проверь настройки приложения VK ID.";
-            console.error(error);
-        }
+    const message = error instanceof Error
+        ? error.message
+        : String(error);
+
+    document.getElementById("message").textContent =
+        "Ошибка авторизации: " + message;
+
+    console.error(error);
+}
     };
     </script>
 </body>
