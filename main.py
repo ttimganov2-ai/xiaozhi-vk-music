@@ -89,3 +89,32 @@ async def vk_status():
             "vk_api_installed": False,
             "message": "Library is not installed"
         }
+
+from fastapi.responses import HTMLResponse
+
+VK_ID_APP_ID = os.getenv("VK_ID_APP_ID", "")
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login():
+    if not VK_ID_APP_ID:
+        raise HTTPException(
+            status_code=503,
+            detail="VK_ID_APP_ID is not configured"
+        )
+
+    return HTMLResponse("""
+    <!doctype html>
+    <html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>XiaoZhi VK Music</title>
+    </head>
+    <body style="font-family:sans-serif;text-align:center;padding:40px">
+        <h2>XiaoZhi VK Music</h2>
+        <p>Настройки приложения VK ID найдены.</p>
+        <p>Следующий этап — подключение авторизации.</p>
+    </body>
+    </html>
+    """)
