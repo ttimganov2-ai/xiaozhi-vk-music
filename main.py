@@ -104,17 +104,59 @@ async def login():
         )
 
     return HTMLResponse("""
-    <!doctype html>
-    <html lang="ru">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>XiaoZhi VK Music</title>
-    </head>
-    <body style="font-family:sans-serif;text-align:center;padding:40px">
-        <h2>XiaoZhi VK Music</h2>
-        <p>Настройки приложения VK ID найдены.</p>
-        <p>Следующий этап — подключение авторизации.</p>
-    </body>
-    </html>
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>XiaoZhi VK Music</title>
+    <script src="https://unpkg.com/@vkid/sdk@2.6.9/dist-sdk/umd/index.js"></script>
+</head>
+<body style="font-family:Arial,sans-serif;text-align:center;padding:30px">
+    <h2>XiaoZhi VK Music</h2>
+    <p>Войди через VK ID, чтобы продолжить.</p>
+    <button id="vk_auth_button"
+        style="background:#0077ff;color:white;border:0;border-radius:8px;padding:14px 24px;font-size:17px">
+        Войти через VK
+    </button>
+    <p id="message"></p>
+
+    <script>
+    const APP_ID = 54813775;
+    const REDIRECT_URL =
+      "https://xiaozhi-vk-music-production.up.railway.app/auth/callback";
+
+    function randomString(length) {
+        const chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+        const bytes = crypto.getRandomValues(new Uint8Array(length));
+        return Array.from(bytes, b => chars[b % chars.length]).join("");
+    }
+
+    const state = randomString(32);
+    const codeVerifier = randomString(64);
+
+    document.getElementById("vk_auth_button").onclick = async function () {
+        try {
+            sessionStorage.setItem("vk_state", state);
+            sessionStorage.setItem("vk_code_verifier", codeVerifier);
+
+            VKID.Config.init({
+                app: APP_ID,
+                redirectUrl: REDIRECT_URL,
+                state: state,
+                codeVerifier: codeVerifier,
+                scope: "email"
+            });
+
+            await VKID.Auth.login();
+        } catch (error) {
+            document.getElementById("message").textContent =
+              "Не удалось начать вход. Проверь настройки приложения VK ID.";
+            console.error(error);
+        }
+    };
+    </script>
+</body>
+</html>
     """)
