@@ -111,16 +111,7 @@ async def login():
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>XiaoZhi VK Music</title>
     <script src="https://unpkg.com/@vkid/sdk@2.6.9/dist-sdk/umd/index.js"></script>
-<script>
-<script>
-window.VKID = window.VKIDSDK;
-</script>
-window.addEventListener("error", function(event) {
-    if (event.message) {
-        console.error("Ошибка страницы:", event.message);
-    }
-});
-</script>
+
 </head>
 <body style="font-family:Arial,sans-serif;text-align:center;padding:30px">
     <h2>XiaoZhi VK Music</h2>
