@@ -142,7 +142,7 @@ async def login():
             sessionStorage.setItem("vk_state", state);
             sessionStorage.setItem("vk_code_verifier", codeVerifier);
 
-            VKID.Config.init({
+            VKIDSDK.Config.init({
                 app: APP_ID,
                 redirectUrl: REDIRECT_URL,
                 state: state,
@@ -150,7 +150,7 @@ async def login():
                 scope: "email"
             });
 
-            await VKID.Auth.login();
+            await VKIDSDK.Auth.login();
         } catch (error) {
     const message = error instanceof Error
         ? error.message
