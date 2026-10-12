@@ -165,4 +165,23 @@ async def login():
     </script>
 </body>
 </html>
-    """)
+
+@app.get("/auth/callback", response_class=HTMLResponse)
+async def auth_callback(code: str = "", state: str = "", error: str = ""):
+    if error:
+        return f"<h2>Ошибка входа VK ID</h2><p>{error}</p>"
+
+    if not code:
+        return "<h2>VK ID не вернул код авторизации</h2>"
+
+    return """
+    <html lang="ru">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <body style="font-family:Arial;text-align:center;padding:30px">
+        <h2>VK ID: вход выполнен</h2>
+        <p>Код авторизации получен.</p>
+        <p>Следующий шаг — безопасно обменять его на токен.</p>
+    </body>
+    </html>
+    """
